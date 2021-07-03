@@ -9,7 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
 
-import com.example.f1info.ui.main.PlaceholderFragment;
+import com.example.f1info.ui.main.StandingsFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -134,6 +134,6 @@ public class LongRunningGetIO extends AsyncTask<Void, Void, String> {
     }
 
     public void expandable(){
-        ExpandableListView expandableListView = (ExpandableListView) root.findViewById(R.id.id_listView);
+//        ExpandableListView expandableListView = (ExpandableListView) root.findViewById(R.id.id_listView);
     }
 }

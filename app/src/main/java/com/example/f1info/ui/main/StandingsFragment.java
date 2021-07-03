@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -21,7 +20,7 @@ import java.util.ArrayList;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class PlaceholderFragment extends Fragment {
+public class StandingsFragment extends Fragment {
 
     private static final String ARG_SECTION_NUMBER = "section_number";
 
@@ -29,8 +28,8 @@ public class PlaceholderFragment extends Fragment {
 
     ArrayList<String> listString = new ArrayList<String>();
 
-    public static PlaceholderFragment newInstance(int index) {
-        PlaceholderFragment fragment = new PlaceholderFragment();
+    public static StandingsFragment newInstance(int index) {
+        StandingsFragment fragment = new StandingsFragment();
         Bundle bundle = new Bundle();
         bundle.putInt(ARG_SECTION_NUMBER, index);
         fragment.setArguments(bundle);
@@ -56,36 +55,44 @@ public class PlaceholderFragment extends Fragment {
     public View onCreateView(
             @NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_main, container, false);
-        pageViewModel.getInt().observe(this, new Observer<Integer>() {
-            @Override
-            public void onChanged(@Nullable Integer tabNum) {
-                Log.i("TabNum",tabNum+"");
-                try {
-                    switch (tabNum) {
-                        case 1:
-                            pageViewModel.loadDriverPage(root,getActivity());
-                            break;
 
-                        case 2:
-                            Log.i("TabNumm",tabNum+"");
-                            pageViewModel.loadConstructorPage(root, getActivity());
-                            break;
+        TabController tabController=new TabController(inflater,container);
+        pageViewModel.getInt().observe(this, tabController);
+        Log.d("Tag","OnViewTabs");
 
-                        case 3:
-                            pageViewModel.loadSchedulingPage(root,getActivity());
-                    }
-                }catch(JSONException e){
-                    e.printStackTrace();
-                }
-            }
-        });
-
-
-
-
-        return root;
+        return tabController.root;
     }
+    class TabController implements Observer<Integer> {
+        View root;
+        private LayoutInflater inflater;
+        private ViewGroup container;
+        public TabController(LayoutInflater inflater, ViewGroup container) {
+            this.inflater=inflater;
+            this.container=container;
+            root = inflater.inflate(R.layout.fragment_main, container, false);
+
+        }
+
+        @Override
+        public void onChanged(Integer tabNum) {
+            Log.i("TabNum",tabNum+"");
+            try {
+                switch (tabNum) {
+                    case 1:
+                        pageViewModel.loadDriverPage(root,getActivity());
+                        break;
+
+                    case 2:
+                        pageViewModel.loadConstructorPage(root, getActivity());
+                        break;
+                }
+            }catch(JSONException e){
+                e.printStackTrace();
+            }
+        }
+
+        }
+
 
 
 }

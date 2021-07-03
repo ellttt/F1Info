@@ -1,6 +1,7 @@
 package com.example.f1info.ui.main;
 
 import android.content.Context;
+import android.widget.ExpandableListView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -28,8 +29,10 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         // getItem is called to instantiate the fragment for the given page.
-        // Return a PlaceholderFragment (defined as a static inner class below).
-        return PlaceholderFragment.newInstance(position + 1);
+        // Return a StandingsFragment (defined as a static inner class below).
+        if(position==2)
+            return ExpandingListViewFragment.newInstance(position+1);
+        return StandingsFragment.newInstance(position + 1);
     }
 
     @Nullable
