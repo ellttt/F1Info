@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">F1Info</string>
+    <string name="tab_text_1">Drivers\' Standings</string>
+    <string name="tab_text_2">Constructors\' Standings</string>
+    <string name="tab_text_3">Scheduling</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
