@@ -47,10 +47,7 @@ public class ExpandingListViewFragment extends Fragment {
             index = getArguments().getInt(ARG_SECTION_NUMBER);
         }
         pageViewModel.setIndex(index);
-        if(pageViewModel==null)
-            Log.i("Tag","Fail");
-        else
-            pageViewModel.getJSONNew();
+
     }
 
     @Override
@@ -59,6 +56,7 @@ public class ExpandingListViewFragment extends Fragment {
             Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.fragment_expandlistview, container, false);
+        pageViewModel.loadSchedulingPage(root,getActivity());
         return root;
     }
 }

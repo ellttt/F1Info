@@ -61,7 +61,7 @@ public class PageViewModel extends ViewModel {
 
     public void loadDriverPage(View root, Activity activity) throws JSONException {
         ArrayList<String> driverNames = new ArrayList<>();
-        getJSON("driver","http://ergast.com/api/f1/2021/driverStandings.json", root, activity);
+        getJSON("driver","https://ergast.com/api/f1/2021/driverStandings.json", root, activity);
 
     }
 
@@ -71,11 +71,11 @@ public class PageViewModel extends ViewModel {
     }
 
     public void loadSchedulingPage(View root, Activity activity){
+        getJSON("schedule","https://ergast.com/api/f1/current.json",root,activity);
 
     }
 
-    public void getJSONNew() {
-    }
+
 
 
 }

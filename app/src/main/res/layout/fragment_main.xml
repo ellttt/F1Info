@@ -5,8 +5,7 @@
     android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#A12323"
-    tools:context=".ui.main.PlaceholderFragment">
+    tools:context=".ui.main.StandingsFragment">
 
     <ListView
         android:id="@+id/id_listView"

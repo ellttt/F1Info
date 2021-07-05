@@ -92,6 +92,18 @@ public class LongRunningGetIO extends AsyncTask<Void, Void, String> {
                 });
                 break;
 
+            case "schedule":
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            schedulingProcessing(results);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
 
         }
 
@@ -109,7 +121,7 @@ public class LongRunningGetIO extends AsyncTask<Void, Void, String> {
             String [] individualData=new String[]{ob.getString("position"),ob.getJSONObject("Constructor").getString("name"),ob.getString("points")};
             data.add(individualData);
         }
-        dataToUI(data);
+        dataToUI_ListView(data);
     }
 
     private void driverProcessing(String result) throws JSONException {
@@ -122,18 +134,34 @@ public class LongRunningGetIO extends AsyncTask<Void, Void, String> {
             String [] individualData=new String []{ob.getString("position"),ob.getJSONObject("Driver").getString("familyName"),ob.getString("points")};
             data.add(individualData);
         }
-        dataToUI(data);
+        dataToUI_ListView(data);
 
     }
 
-    public void dataToUI(ArrayList data){
+    private void schedulingProcessing(String result) throws JSONException {
+        Log.d("qwe","schedulingProcess");
+        JSONObject json= new JSONObject(result);
+        arr=json.getJSONObject("MRData").getJSONObject("RaceTable").getJSONArray("Races");
+        Log.i("Parsed JSON", arr + "");
+        ArrayList data=new ArrayList();
+        for(int i=0; i<arr.length(); i++){
+            JSONObject ob= (JSONObject) arr.get(i);
+            String [] individualData=new String []{ob.getString("round"),ob.getString("raceName"),ob.getString("date"),ob.getJSONObject("Circuit").toString(),ob.getString("time")};
+            data.add(individualData);
+        }
+        dataToUI_ExpandingListView(data);
+    }
+
+    public void dataToUI_ListView(ArrayList data){
         Log.d("Tag","dataToUI");
         MyListAdapter adapter= new MyListAdapter(root.getContext(), R.layout.activity_list,data);
         ListView simpleList = (ListView) root.findViewById(R.id.id_listView);
         simpleList.setAdapter(adapter);
     }
 
-    public void expandable(){
-//        ExpandableListView expandableListView = (ExpandableListView) root.findViewById(R.id.id_listView);
+    public void dataToUI_ExpandingListView(ArrayList data){
+        MyExpandableListAdapter adapter = new MyExpandableListAdapter(root.getContext(), R.layout.activity_list,data);
+        ExpandableListView expandableListView = (ExpandableListView) root.findViewById(R.id.id_expandinglistView);
+        expandableListView.setAdapter(adapter);
     }
 }

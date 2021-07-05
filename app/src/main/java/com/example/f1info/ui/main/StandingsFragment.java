@@ -45,10 +45,7 @@ public class StandingsFragment extends Fragment {
             index = getArguments().getInt(ARG_SECTION_NUMBER);
         }
         pageViewModel.setIndex(index);
-        if(pageViewModel==null)
-            Log.i("Tag","Fail");
-        else
-            pageViewModel.getJSONNew();
+
     }
 
     @Override
