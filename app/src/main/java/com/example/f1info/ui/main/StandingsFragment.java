@@ -5,15 +5,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.f1info.MyListAdapter;
 import com.example.f1info.R;
-
-import org.json.JSONException;
 
 import java.util.ArrayList;
 
@@ -25,8 +24,7 @@ public class StandingsFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "section_number";
 
     private PageViewModel pageViewModel;
-
-    ArrayList<String> listString = new ArrayList<String>();
+    private View root;
 
     public static StandingsFragment newInstance(int index) {
         StandingsFragment fragment = new StandingsFragment();
@@ -39,56 +37,33 @@ public class StandingsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        pageViewModel = new ViewModelProvider(this).get(PageViewModel.class);
-        int index = 1;
+        pageViewModel = new ViewModelProvider(requireActivity()).get(PageViewModel.class);
+        int index = 0;
         if (getArguments() != null) {
             index = getArguments().getInt(ARG_SECTION_NUMBER);
         }
-        pageViewModel.setIndex(index);
-
     }
 
     @Override
     public View onCreateView(
             @NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
+        this.root = inflater.inflate(R.layout.fragment_main, container, false);
+        ArrayList data=pageViewModel.loadDriverPage(this.root);
+        dataToUI_ListView(data);
+        pageViewModel.getIndex().observe(this, TabController.newInstance(pageViewModel,this.root));
 
-        TabController tabController=new TabController(inflater,container);
-        pageViewModel.getInt().observe(this, tabController);
-        Log.d("Tag","OnViewTabs");
-
-        return tabController.root;
+        return this.root;
     }
-    class TabController implements Observer<Integer> {
-        View root;
-        private LayoutInflater inflater;
-        private ViewGroup container;
-        public TabController(LayoutInflater inflater, ViewGroup container) {
-            this.inflater=inflater;
-            this.container=container;
-            root = inflater.inflate(R.layout.fragment_main, container, false);
 
-        }
+    public void dataToUI_ListView(ArrayList data){
+        Log.d("Tag","dataToUI");
+        MyListAdapter adapter= new MyListAdapter(root.getContext(), R.layout.activity_list,data);
+        ListView simpleList = (ListView) root.findViewById(R.id.id_listView);
+        simpleList.setAdapter(adapter);
+    }
 
-        @Override
-        public void onChanged(Integer tabNum) {
-            Log.i("TabNum",tabNum+"");
-            try {
-                switch (tabNum) {
-                    case 1:
-                        pageViewModel.loadDriverPage(root,getActivity());
-                        break;
 
-                    case 2:
-                        pageViewModel.loadConstructorPage(root, getActivity());
-                        break;
-                }
-            }catch(JSONException e){
-                e.printStackTrace();
-            }
-        }
-
-        }
 
 
 

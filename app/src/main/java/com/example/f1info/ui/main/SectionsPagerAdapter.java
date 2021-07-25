@@ -1,8 +1,10 @@
 package com.example.f1info.ui.main;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.ExpandableListView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
@@ -10,6 +12,10 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.example.f1info.R;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
 
 /**
  * A [FragmentPagerAdapter] that returns a fragment corresponding to
@@ -31,8 +37,8 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
         // getItem is called to instantiate the fragment for the given page.
         // Return a StandingsFragment (defined as a static inner class below).
         if(position==2)
-            return ExpandingListViewFragment.newInstance(position+1);
-        return StandingsFragment.newInstance(position + 1);
+            return ExpandingListViewFragment.newInstance(position);
+        return StandingsFragment.newInstance(position);
     }
 
     @Nullable
@@ -44,6 +50,13 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     @Override
     public int getCount() {
         // Show 3 total pages.
-        return 3;
+        return TAB_TITLES.length;
+    }
+
+
+
+    @Override
+    public long getItemId(int position) {
+        return super.getItemId(position);
     }
 }

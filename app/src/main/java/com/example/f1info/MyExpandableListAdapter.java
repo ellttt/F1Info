@@ -2,6 +2,7 @@ package com.example.f1info;
 
 import android.content.Context;
 import android.database.DataSetObserver;
+import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,13 @@ import android.view.ViewGroup;
 import android.widget.ExpandableListAdapter;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class MyExpandableListAdapter implements ExpandableListAdapter {
@@ -20,10 +28,10 @@ public class MyExpandableListAdapter implements ExpandableListAdapter {
 
     public MyExpandableListAdapter(Context context, int resource, ArrayList data){
         this.data=data;
-        Log.d("Tag","MyExpandableListAdapter Constructor");
+//        Log.d("Tag","MyExpandableListAdapter Constructor");
         this.resourceLayout = resource;
         this.mContext = context;
-        mInflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//        mInflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
     }
 
@@ -44,7 +52,7 @@ public class MyExpandableListAdapter implements ExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return 0;
+        return 5;
     }
 
     @Override
@@ -54,7 +62,7 @@ public class MyExpandableListAdapter implements ExpandableListAdapter {
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        return null;
+        return data.get(childPosition);
     }
 
     @Override
@@ -64,7 +72,7 @@ public class MyExpandableListAdapter implements ExpandableListAdapter {
 
     @Override
     public long getChildId(int groupPosition, int childPosition) {
-        return 0;
+        return childPosition;
     }
 
     @Override
@@ -96,11 +104,39 @@ public class MyExpandableListAdapter implements ExpandableListAdapter {
         return view;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View view, ViewGroup parent) {
+        Log.d("Tag","OnView Group");
+        if (view == null) {
+            LayoutInflater vi;
+            vi = LayoutInflater.from(mContext);
+            view = vi.inflate(resourceLayout, null);
+        }
+        ArrayList<String> list = new ArrayList<>();
+        list.add("Practice 1");
+        list.add("Practice 2");
+        list.add("Practice 3");
+        list.add("Qualifying");
+        list.add("Race");
 
 
-        return null;
+
+        TextView p=view.findViewById(R.id.id_position);
+        TextView competitor=view.findViewById(R.id.id_competitor);
+        TextView points = view.findViewById(R.id.id_pointsPocket);
+        String [] individual=data.get(groupPosition);
+//        ZonedDateTime raceDateTime= parseDateTime(individual[2],individual[4]);
+//        Log.d("Tag",raceDateTime.toString());
+
+
+        p.setText(individual[2]);
+        competitor.setText(list.get(childPosition));
+        points.setText(individual[4]);
+        Log.d("Data Added",individual[1]);
+
+        return view;
+
     }
 
     @Override
@@ -136,5 +172,9 @@ public class MyExpandableListAdapter implements ExpandableListAdapter {
     @Override
     public long getCombinedGroupId(long groupId) {
         return 0;
+    }
+
+    public ZonedDateTime parseDateTime(String date, String time){
+        return ZonedDateTime.parse(date+"T"+time, DateTimeFormatter.ISO_INSTANT);
     }
 }

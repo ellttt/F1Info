@@ -1,10 +1,10 @@
 package com.example.f1info.ui.main;
 
 import android.app.Activity;
-import android.content.Context;
-import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
+import android.widget.ExpandableListView;
+import android.widget.ListView;
 
 import androidx.arch.core.util.Function;
 import androidx.lifecycle.LiveData;
@@ -12,20 +12,24 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
-import com.example.f1info.LongRunningGetIO;
+import com.example.f1info.DataProcessing;
+import com.example.f1info.MyExpandableListAdapter;
+import com.example.f1info.MyListAdapter;
+import com.example.f1info.R;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class PageViewModel extends ViewModel {
+
+    private View root;
+    private Activity activity;
+    private ArrayList driverData;
+    private ArrayList constructorData;
+    private ArrayList schedulingData;
 
     private MutableLiveData<Integer> mIndex = new MutableLiveData<>();
     private LiveData<String> mText = Transformations.map(mIndex, new Function<Integer, String>() {
@@ -41,38 +45,91 @@ public class PageViewModel extends ViewModel {
         }
     });
 
+
+
     public void setIndex(int index) {
         mIndex.setValue(index);
+    }
+
+    public MutableLiveData<Integer> getIndex(){
+        return mIndex;
     }
 
     public LiveData<String> getText() {
         return mText;
     }
 
-    public LiveData<Integer> getInt() {
-        return mInt;
+    public ArrayList loadDriverPage(View root){
+        Log.i("INFO_LOGGING","loadDriverPage");
+
+        this.root=root;
+
+        if (driverData == null) {
+            Log.d("ConcurrencySwitch","driverData null");
+            driverData=getAndProcessData("driver");
+        }
+
+        Log.d("ConcurrencySwitch","Data: "+driverData);
+//        dataToUI_ListView(driverData);
+        Log.d("ConcurrencySwitch","Data sent to UI");
+        return driverData;
+
+
     }
 
-    public void getJSON(String key,String url, View root, Activity activity) {
-        LongRunningGetIO runner= new LongRunningGetIO(key,url,root, activity);
-        runner.execute();
+    public ArrayList loadConstructorPage(View root) {
+        Log.i("INFO_LOGGING","loadConstructorPage");
+
+        this.root=root;
+
+        if (constructorData == null) {
+            Log.d("ConcurrencySwitch","constructorData null");
+            constructorData=getAndProcessData("constructor");
+        }
+
+        Log.d("ConcurrencySwitch","Data: "+constructorData);
+//        dataToUI_ListView(constructorData);
+        Log.d("ConcurrencySwitch","Data sent to UI");
+        return constructorData;
+    }
+
+    public ArrayList loadSchedulingPage(View root){
+        this.root=root;
+        if(schedulingData==null){
+            schedulingData=getAndProcessData("scheduling");
+        }
+        return schedulingData;
+
 
     }
 
-    public void loadDriverPage(View root, Activity activity) throws JSONException {
-        ArrayList<String> driverNames = new ArrayList<>();
-        getJSON("driver","https://ergast.com/api/f1/2021/driverStandings.json", root, activity);
-
+    public void dataToUI_ListView(ArrayList data){
+        Log.i("INFO_LOGGING","Posting Data to UI: "+data);
+        MyListAdapter adapter= new MyListAdapter(root.getContext(), R.layout.activity_list,data);
+        ListView simpleList = (ListView) root.findViewById(R.id.id_listView);
+        simpleList.setAdapter(adapter);
     }
 
-    public void loadConstructorPage(View root, Activity activity) {
-
-        getJSON("constructor","https://ergast.com/api/f1/2021/constructorStandings.json",root, activity);
+    public void dataToUI_ExpandingListView(ArrayList data){
+        MyExpandableListAdapter adapter = new MyExpandableListAdapter(root.getContext(), R.layout.activity_list,data);
+        ExpandableListView expandableListView = (ExpandableListView) root.findViewById(R.id.id_expandinglistView);
+        expandableListView.setAdapter(adapter);
     }
 
-    public void loadSchedulingPage(View root, Activity activity){
-        getJSON("schedule","https://ergast.com/api/f1/current.json",root,activity);
-
+    private ArrayList getAndProcessData(String key){
+        ArrayList processedData = new ArrayList();
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        Future<ArrayList> future=executorService.submit(new DataProcessing(key));
+        try {
+            processedData=future.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        executorService.shutdown();
+        Log.d("ConcurrencySwitch","Future is done: "+future.isDone());
+        return processedData;
     }
 
 

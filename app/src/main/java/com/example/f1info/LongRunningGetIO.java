@@ -28,17 +28,98 @@ public class LongRunningGetIO extends AsyncTask<Void, Void, String> {
     private Activity activity;
     private View root;
     private String key;
-    public LongRunningGetIO(String key,String url, View root, Activity activity){
-        this.activity=activity;
-        this.root=root;
-        urlString=url;
-        this.key=key;
+
+    ArrayList<String []> driverData=null;
+    ArrayList<String []> constructorData=null;
+    ArrayList<String []> schedulingData=null;
+
+    public LongRunningGetIO(/*View root, Activity activity*/){
+//        this.activity=activity;
+//        this.root=root;
+//        urlString=url;
+//        this.key=key;
+
     }
 
 
 
     @Override
     protected String doInBackground(Void... params) {
+        Log.d("ThreadDebug","doInBackground");
+//        String data = urlCall("https://ergast.com/api/f1/2021/driverStandings.json")
+//                +"%%"+urlCall("https://ergast.com/api/f1/2021/constructorStandings.json")
+//                +"%%"+urlCall("https://ergast.com/api/f1/current.json");
+//        return data;
+        String data=urlCall("https://ergast.com/api/f1/2021/driverStandings.json");
+        Log.d("ThreadDebug","data in doInBackground");
+        return data;
+    }
+
+
+    protected void onPostExecute(String results) {
+        Log.d("ThreadDebug","onPostExecute");
+        try {
+            driverProcessing(results);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+//        String [] dataArray = results.split("%%");
+//        try {
+//            driverProcessing(dataArray[0]);
+//            constructorProcessing(dataArray[1]);
+//            schedulingProcessing(dataArray[2]);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+
+//        switch(key) {
+//            case "driver":
+//                activity.runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        try {
+//                            driverProcessing(results);
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                });
+//                break;
+//
+//            case "constructor":
+//                activity.runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        try {
+//                            constructorProcessing(results);
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                });
+//                break;
+//
+//            case "schedule":
+//                activity.runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        try {
+//                            schedulingProcessing(results);
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                });
+//
+//
+//        }
+
+
+    }
+
+    private String urlCall(String urlString){
+        Log.d("taggy","api call");
         try {
             URL url = new URL(urlString);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -64,52 +145,6 @@ public class LongRunningGetIO extends AsyncTask<Void, Void, String> {
     }
 
 
-    protected void onPostExecute(String results) {
-        switch(key) {
-            case "driver":
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            driverProcessing(results);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-                break;
-
-            case "constructor":
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            constructorProcessing(results);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-                break;
-
-            case "schedule":
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            schedulingProcessing(results);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-
-
-        }
-
-
-    }
-
     private void constructorProcessing(String result) throws JSONException {
         Log.i("Tag","constructorProcessing");
         JSONObject json= new JSONObject(result);
@@ -121,7 +156,8 @@ public class LongRunningGetIO extends AsyncTask<Void, Void, String> {
             String [] individualData=new String[]{ob.getString("position"),ob.getJSONObject("Constructor").getString("name"),ob.getString("points")};
             data.add(individualData);
         }
-        dataToUI_ListView(data);
+        constructorData=data;
+//        dataToUI_ListView(data);
     }
 
     private void driverProcessing(String result) throws JSONException {
@@ -134,7 +170,8 @@ public class LongRunningGetIO extends AsyncTask<Void, Void, String> {
             String [] individualData=new String []{ob.getString("position"),ob.getJSONObject("Driver").getString("familyName"),ob.getString("points")};
             data.add(individualData);
         }
-        dataToUI_ListView(data);
+        driverData=data;
+//        dataToUI_ListView(data);
 
     }
 
@@ -149,19 +186,21 @@ public class LongRunningGetIO extends AsyncTask<Void, Void, String> {
             String [] individualData=new String []{ob.getString("round"),ob.getString("raceName"),ob.getString("date"),ob.getJSONObject("Circuit").toString(),ob.getString("time")};
             data.add(individualData);
         }
-        dataToUI_ExpandingListView(data);
+        schedulingData=data;
+//        dataToUI_ExpandingListView(data);
     }
 
-    public void dataToUI_ListView(ArrayList data){
-        Log.d("Tag","dataToUI");
-        MyListAdapter adapter= new MyListAdapter(root.getContext(), R.layout.activity_list,data);
-        ListView simpleList = (ListView) root.findViewById(R.id.id_listView);
-        simpleList.setAdapter(adapter);
+
+
+    public ArrayList<String []> getDriverData(){
+        return driverData;
     }
 
-    public void dataToUI_ExpandingListView(ArrayList data){
-        MyExpandableListAdapter adapter = new MyExpandableListAdapter(root.getContext(), R.layout.activity_list,data);
-        ExpandableListView expandableListView = (ExpandableListView) root.findViewById(R.id.id_expandinglistView);
-        expandableListView.setAdapter(adapter);
+    public ArrayList<String []> getConstructorData(){
+        return constructorData;
+    }
+
+    public ArrayList<String []> getSchedulingData(){
+        return schedulingData;
     }
 }
