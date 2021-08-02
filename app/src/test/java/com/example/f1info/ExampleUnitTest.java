@@ -51,7 +51,11 @@ public class ExampleUnitTest {
 
     @Test
     public void testDate() {
-        LocalDateTime dateTime = LocalDateTime.parse("2011-12-03T10:15:30Z", DateTimeFormatter.ISO_INSTANT);
+        ZonedDateTime dateTime = ZonedDateTime.parse("2011-12-03T10:15:30Z");
+        StringBuilder str =new StringBuilder();
+        str.append("test");
+        str.append("test2");
+        System.out.println(str);
     }
 
     @Test

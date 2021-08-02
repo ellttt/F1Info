@@ -12,8 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.example.f1info.models.Race;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -21,13 +20,13 @@ import java.util.ArrayList;
 
 public class MyExpandableListAdapter implements ExpandableListAdapter {
 
-    ArrayList<String []> data;
+    ArrayList<Race> raceArrayList;
     int resourceLayout;
     Context mContext;
     LayoutInflater mInflater;
 
     public MyExpandableListAdapter(Context context, int resource, ArrayList data){
-        this.data=data;
+        this.raceArrayList=data;
 //        Log.d("Tag","MyExpandableListAdapter Constructor");
         this.resourceLayout = resource;
         this.mContext = context;
@@ -47,7 +46,7 @@ public class MyExpandableListAdapter implements ExpandableListAdapter {
 
     @Override
     public int getGroupCount() {
-        return data.size();
+        return raceArrayList.size();
     }
 
     @Override
@@ -57,12 +56,12 @@ public class MyExpandableListAdapter implements ExpandableListAdapter {
 
     @Override
     public Object getGroup(int groupPosition) {
-        return data.get(groupPosition);
+        return raceArrayList.get(groupPosition);
     }
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        return data.get(childPosition);
+        return raceArrayList.get(childPosition);
     }
 
     @Override
@@ -92,14 +91,11 @@ public class MyExpandableListAdapter implements ExpandableListAdapter {
         TextView p=view.findViewById(R.id.id_position);
         TextView competitor=view.findViewById(R.id.id_competitor);
         TextView points = view.findViewById(R.id.id_pointsPocket);
-        String [] individual=data.get(groupPosition);
-        p.setText(individual[0]);
-        if(individual[1].contains("Grand Prix")){
-            competitor.setText(individual[1].substring(0,individual[1].indexOf("Grand Prix"))+"GP");
-        }
-
-        points.setText(individual[2]);
-        Log.d("Data Added",individual[1]);
+        Race individual=raceArrayList.get(groupPosition);
+        p.setText(individual.getRound());
+        competitor.setText(individual.getRaceNickName());
+        points.setText(individual.getRaceDateTime().format(DateTimeFormatter.ofPattern("MM/dd")));
+        Log.d("Data Added",individual.toString());
 
         return view;
     }
@@ -113,27 +109,18 @@ public class MyExpandableListAdapter implements ExpandableListAdapter {
             vi = LayoutInflater.from(mContext);
             view = vi.inflate(resourceLayout, null);
         }
-        ArrayList<String> list = new ArrayList<>();
-        list.add("Practice 1");
-        list.add("Practice 2");
-        list.add("Practice 3");
-        list.add("Qualifying");
-        list.add("Race");
-
 
 
         TextView p=view.findViewById(R.id.id_position);
         TextView competitor=view.findViewById(R.id.id_competitor);
         TextView points = view.findViewById(R.id.id_pointsPocket);
-        String [] individual=data.get(groupPosition);
-//        ZonedDateTime raceDateTime= parseDateTime(individual[2],individual[4]);
-//        Log.d("Tag",raceDateTime.toString());
+        Race individual=raceArrayList.get(groupPosition);
 
 
-        p.setText(individual[2]);
-        competitor.setText(list.get(childPosition));
-        points.setText(individual[4]);
-        Log.d("Data Added",individual[1]);
+        p.setText(individual.getSessions().get(childPosition).getDate());
+        competitor.setText(individual.getSessions().get(childPosition).getSessionType());
+        points.setText(individual.getSessions().get(childPosition).getTime());
+        Log.d("Data Added",individual.toString());
 
         return view;
 

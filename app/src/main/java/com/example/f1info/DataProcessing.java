@@ -2,6 +2,8 @@ package com.example.f1info;
 
 import android.util.Log;
 
+import com.example.f1info.models.Race;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,8 +20,9 @@ public class DataProcessing implements Callable {
 
     private String key;
     private JSONArray arr;
-    public DataProcessing(String key){
-        this.key=key;
+
+    public DataProcessing(String key) {
+        this.key = key;
 
     }
 
@@ -27,36 +30,37 @@ public class DataProcessing implements Callable {
     public ArrayList call() throws Exception {
         ArrayList data = new ArrayList();
         String result;
-        switch(key){
+        switch (key) {
             case "driver":
-                result=urlCall("https://ergast.com/api/f1/2021/driverStandings.json");
+                result = urlCall("https://ergast.com/api/f1/2021/driverStandings.json");
                 try {
-                    data=driverProcessing(result);
+                    data = driverProcessing(result);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 break;
 
             case "constructor":
-                result=urlCall("https://ergast.com/api/f1/2021/constructorStandings.json");
-                data=constructorProcessing(result);
+                result = urlCall("https://ergast.com/api/f1/2021/constructorStandings.json");
+                data = constructorProcessing(result);
                 break;
 
             case "scheduling":
-                result=urlCall("https://ergast.com/api/f1/current.json");
-                data=schedulingProcessing(result);
+                result = urlCall("https://ergast.com/api/f1/current.json");
+                data = schedulingProcessing(result);
+                break;
 
         }
         return data;
     }
 
 
-    private String urlCall(String urlString){
-        Log.i("INFO_LOGGING","Making HttpURLConnection");
+    private String urlCall(String urlString) {
+        Log.i("INFO_LOGGING", "Making HttpURLConnection");
         try {
             URL url = new URL(urlString);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            Log.i("Response Code: ",con.getResponseCode()+"");
+            Log.i("Response Code: ", con.getResponseCode() + "");
 
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             String inputLine;
@@ -67,7 +71,7 @@ public class DataProcessing implements Callable {
             }
             in.close();
             con.disconnect();
-            Log.i("Data from API: ",data);
+            Log.i("Data from API: ", data);
 //            Log.i("JSON",new JSONObject(data)+"");
             return (data);
 
@@ -81,10 +85,10 @@ public class DataProcessing implements Callable {
         JSONObject json = new JSONObject(result);
         arr = json.getJSONObject("MRData").getJSONObject("StandingsTable").getJSONArray("StandingsLists").getJSONObject(0).getJSONArray("DriverStandings");
         Log.i("Parsed JSON", arr + "");
-        ArrayList data=new ArrayList();
-        for(int i=0; i<arr.length(); i++){
-            JSONObject ob= (JSONObject) arr.get(i);
-            String [] individualData=new String []{ob.getString("position"),ob.getJSONObject("Driver").getString("familyName"),ob.getString("points")};
+        ArrayList data = new ArrayList();
+        for (int i = 0; i < arr.length(); i++) {
+            JSONObject ob = (JSONObject) arr.get(i);
+            String[] individualData = new String[]{ob.getString("position"), ob.getJSONObject("Driver").getString("familyName"), ob.getString("points")};
             data.add(individualData);
         }
         return data;
@@ -92,28 +96,34 @@ public class DataProcessing implements Callable {
 
     private ArrayList constructorProcessing(String result) throws JSONException {
 
-        Log.i("Tag","constructorProcessing");
-        JSONObject json= new JSONObject(result);
-        arr=json.getJSONObject("MRData").getJSONObject("StandingsTable").getJSONArray("StandingsLists").getJSONObject(0).getJSONArray("ConstructorStandings");
+        Log.i("Tag", "constructorProcessing");
+        JSONObject json = new JSONObject(result);
+        arr = json.getJSONObject("MRData").getJSONObject("StandingsTable").getJSONArray("StandingsLists").getJSONObject(0).getJSONArray("ConstructorStandings");
         Log.i("Parsed JSON Constructor", arr + "");
-        ArrayList<String[]> data=new ArrayList();
-        for(int i=0; i<arr.length(); i++){
-            JSONObject ob= (JSONObject) arr.get(i);
-            String [] individualData=new String[]{ob.getString("position"),ob.getJSONObject("Constructor").getString("name"),ob.getString("points")};
+        ArrayList<String[]> data = new ArrayList();
+        for (int i = 0; i < arr.length(); i++) {
+            JSONObject ob = (JSONObject) arr.get(i);
+            String[] individualData = new String[]{ob.getString("position"), ob.getJSONObject("Constructor").getString("name"), ob.getString("points")};
             data.add(individualData);
         }
         return data;
     }
+
     private ArrayList schedulingProcessing(String result) throws JSONException {
-        Log.d("qwe","schedulingProcess");
-        JSONObject json= new JSONObject(result);
-        arr=json.getJSONObject("MRData").getJSONObject("RaceTable").getJSONArray("Races");
+        Log.d("qwe", "schedulingProcess");
+        JSONObject json = new JSONObject(result);
+        arr = json.getJSONObject("MRData").getJSONObject("RaceTable").getJSONArray("Races");
         Log.i("Parsed JSON", arr + "");
-        ArrayList data=new ArrayList();
-        for(int i=0; i<arr.length(); i++){
-            JSONObject ob= (JSONObject) arr.get(i);
-            String [] individualData=new String []{ob.getString("round"),ob.getString("raceName"),ob.getString("date"),ob.getJSONObject("Circuit").toString(),ob.getString("time")};
-            data.add(individualData);
+        ArrayList data = new ArrayList();
+        for (int i = 0; i < arr.length(); i++) {
+            JSONObject ob = (JSONObject) arr.get(i);
+            String[] individualData = new String[]{ob.getString("round"),
+                    ob.getString("raceName"), ob.getString("date"),
+                    ob.getJSONObject("Circuit").toString(), ob.getString("time")};
+            Race race = new Race(ob.getString("raceName"), "2021",
+                    ob.getString("round"), ob.getString("date"),
+                    ob.getString("time"), ob.getJSONObject("Circuit").toString());
+            data.add(race);
         }
         return data;
 //        dataToUI_ExpandingListView(data);
