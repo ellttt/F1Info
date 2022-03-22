@@ -32,7 +32,7 @@ public class DataProcessing implements Callable {
         String result;
         switch (key) {
             case "driver":
-                result = urlCall("https://ergast.com/api/f1/2021/driverStandings.json");
+                result = urlCall("https://ergast.com/api/f1/2022/driverStandings.json");
                 try {
                     data = driverProcessing(result);
                 } catch (JSONException e) {
@@ -41,7 +41,7 @@ public class DataProcessing implements Callable {
                 break;
 
             case "constructor":
-                result = urlCall("https://ergast.com/api/f1/2021/constructorStandings.json");
+                result = urlCall("https://ergast.com/api/f1/2022/constructorStandings.json");
                 data = constructorProcessing(result);
                 break;
 
@@ -120,7 +120,7 @@ public class DataProcessing implements Callable {
             String[] individualData = new String[]{ob.getString("round"),
                     ob.getString("raceName"), ob.getString("date"),
                     ob.getJSONObject("Circuit").toString(), ob.getString("time")};
-            Race race = new Race(ob.getString("raceName"), "2021",
+            Race race = new Race(ob.getString("raceName"), "2022",
                     ob.getString("round"), ob.getString("date"),
                     ob.getString("time"), ob.getJSONObject("Circuit").toString());
             data.add(race);

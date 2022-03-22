@@ -68,7 +68,7 @@ public class MyListAdapter extends ArrayAdapter {
         TextView competitor=view.findViewById(R.id.id_competitor);
         TextView points = view.findViewById(R.id.id_pointsPocket);
         String [] individual=data.get(position);
-        p.setText("P"+individual[0]);
+        p.setText("P "+individual[0]);
         competitor.setText(individual[1]);
         points.setText(individual[2]);
 
