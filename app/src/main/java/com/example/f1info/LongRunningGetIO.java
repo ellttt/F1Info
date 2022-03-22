@@ -1,15 +1,9 @@
 package com.example.f1info;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ExpandableListView;
-import android.widget.ListView;
-
-import com.example.f1info.ui.main.StandingsFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,11 +40,11 @@ public class LongRunningGetIO extends AsyncTask<Void, Void, String> {
     @Override
     protected String doInBackground(Void... params) {
         Log.d("ThreadDebug","doInBackground");
-//        String data = urlCall("https://ergast.com/api/f1/2021/driverStandings.json")
-//                +"%%"+urlCall("https://ergast.com/api/f1/2021/constructorStandings.json")
+//        String data = urlCall("https://ergast.com/api/f1/2022/driverStandings.json")
+//                +"%%"+urlCall("https://ergast.com/api/f1/2022/constructorStandings.json")
 //                +"%%"+urlCall("https://ergast.com/api/f1/current.json");
 //        return data;
-        String data=urlCall("https://ergast.com/api/f1/2021/driverStandings.json");
+        String data=urlCall("https://ergast.com/api/f1/2022/driverStandings.json");
         Log.d("ThreadDebug","data in doInBackground");
         return data;
     }

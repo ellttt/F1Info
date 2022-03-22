@@ -44,7 +44,7 @@ public class ExampleUnitTest {
     @Test
     public void urlConnection() throws JSONException {
 //        PageViewModel pageViewModel= new PageViewModel();
-//        String json=pageViewModel.getJSON("http://ergast.com/api/f1/2021/driverStandings.json");
+//        String json=pageViewModel.getJSON("http://ergast.com/api/f1/2022/driverStandings.json");
 //        System.out.println(json);
 
     }
